@@ -37,11 +37,13 @@ print(df.isnull().sum())
 # --------------------------
 # 4. Encode Gender (Male=1, Female=0)
 # --------------------------
+
 df['Genre'] = df['Genre'].map({'Male': 1, 'Female': 0})
 
 # --------------------------
 # 5. Correlation Heatmap
 # --------------------------
+
 plt.figure(figsize=(10, 6))
 sns.heatmap(df.corr(), annot=True, cmap="viridis")
 plt.title("Correlation Heatmap")
@@ -61,6 +63,7 @@ import numpy as np
 # 1. Select Features for Clustering
 # ----------------------------------------
 # Option 1: Use the most common 3 features
+
 X = df[['Genre', 'Age', 'Annual Income (k$)', 'Spending Score (1-100)']]
 print("\n=== Selected Features ===")
 print(X.head())
@@ -76,6 +79,7 @@ print("\n=== Scaling Completed ===")
 # ----------------------------------------
 # 3. Elbow Method (Find Optimal K)
 # ----------------------------------------
+
 inertia_list = []
 K_range = range(2, 14)
 
@@ -96,6 +100,7 @@ plt.show()
 # ----------------------------------------
 # 4. Silhouette Scores (Secondary Check)
 # ----------------------------------------
+
 silhouette_scores = []
 
 for k in K_range:
@@ -115,8 +120,9 @@ plt.show()
 print("\n=== Silhouette Scores ===")
 for k, score in zip(K_range, silhouette_scores):
     print(f"k={k}: score={score:.4f}")
+    
 # ==========================
-# STEP 3: APPLY K-MEANS + VISUALIZE CLUSTERS
+# STEP 3: APPLYING K-MEANS + VISUALIZING CLUSTERS
 # ==========================
 
 from sklearn.cluster import KMeans
@@ -124,14 +130,14 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
 # ----------------------------------------
-# 1. Choose Optimal K (usually from Step 2)
+# 1. Choosing Optimal K ( from Step 2)
 # ----------------------------------------
 optimal_k =11  # based on Elbow/Silhouette result
 
 kmeans = KMeans(n_clusters=optimal_k, random_state=42)
 cluster_labels = kmeans.fit_predict(X_scaled)
 
-# Add cluster labels to original dataframe
+# Adding cluster labels to original dataframe
 df['Cluster'] = cluster_labels
 
 print("\n=== Clustering Completed ===")
@@ -171,7 +177,7 @@ ax.set_zlabel("PCA 3")
 plt.show()
 
 # ----------------------------------------
-# 4. Show Cluster Centers (in scaled feature space)
+# 4. Showing Cluster Centers (in scaled feature space)
 # ----------------------------------------
 print("\n=== Cluster Centers (Scaled Feature Space) ===")
 print(kmeans.cluster_centers_)
@@ -179,16 +185,16 @@ print(kmeans.cluster_centers_)
 # STEP 4: CLUSTER INTERPRETATION
 # ==========================
 
-# Combine PCA components + original cluster labels for profiling
+# Combining PCA components + original cluster labels for profiling
 df_profile = df.copy()
 
-# Calculate cluster-wise averages
+# Calculating cluster-wise averages
 cluster_summary = df_profile.groupby("Cluster").mean()
 
 print("\n=== Cluster Summary (Mean Values per Cluster) ===")
 print(cluster_summary)
 
-# Plot each cluster distribution
+# Plotting each cluster distribution
 numeric_cols = ["Age", "Annual Income (k$)", "Spending Score (1-100)"]
 
 for col in numeric_cols:
@@ -197,7 +203,7 @@ for col in numeric_cols:
     plt.title(f"{col} Distribution Across Clusters")
     plt.show()
 
-# Count of customers per cluster
+# Counting of customers per cluster
 plt.figure(figsize=(6,4))
 sns.countplot(x="Cluster", data=df_profile)
 plt.title("Customers per Cluster")
@@ -237,3 +243,4 @@ df["Cluster_Name"] = df["Cluster"].map(cluster_names)
 
 print("\n=== Cluster Names Assigned ===")
 print(df[['Cluster', 'Cluster_Name']].head())
+
